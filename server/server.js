@@ -7,17 +7,17 @@ var {User} = require('./models/user');
 
 var app = express ();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json());  // bodyParser send json to the server.
 
-app.post('/todos', (req, res) => {
+app.post('/todos', (req, res) => {  //Create a new todo using POST.  json is the body which is the todo information. /todo is the URL for creating new todo
   var todo = new Todo({
     text: req.body.text
   });
 
-  todo.save().then((doc) => {
-    res.send(doc);
+  todo.save().then((doc) => { //save the todo to the DB
+    res.send(doc);          //send the doc back to the user
   }, (e) => {
-    res.status(400).send(e);
+    res.status(400).send(e);  //if and error happened then send status=400 back
   });
 });
 
