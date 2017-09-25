@@ -96,7 +96,7 @@ describe('GET /todos/:id', () => {
     //todos/123
     request(app)
       .get('todos/123abc')
-      .expect(404)
+      .expect(400)
       .end(done);
   });
 
