@@ -52,6 +52,35 @@ app.get('/todos/:id', (req, res) => { //This gets the value after the /todos/###
     res.status(400).send();         //if there was an error, send 400 back with empty message
   });
 });
+//------------------------------------DELETE------------------------------------------
+app.delete('/todos/:id', (req, res) => {
+  //get the id
+  var id = req.params.id;          //Set the id variable to the params.id from the web-call
+
+  //validate the id -> not valid? return 404
+  if(!ObjectID.isValid(id)) {         //validate the ID is a valid MongoDB ID
+    return res.status(404).send();  //If the id is not valid send status 404 and empty body
+  }
+
+  //remove todo by id
+  Todo.findByIdAndRemove(id).then((todo) => {
+    //success
+      //if no doc, send 404
+    if(!todo) {                       //check if todo was found
+      return res.status(404).send();  //if no todo was found by ID send status 404 and empty message
+    }
+
+      res.send(todo);
+
+  }).catch((e) => {
+    res.status(400).send();
+  });
+        //if doc, send doc back with 200
+    //error
+      //send 400 with empty body
+});
+
+//------------------------------------START SERVER------------------------------------------
 
 app.listen(port, () => {
   console.log(`Started up at port ${port}`);
