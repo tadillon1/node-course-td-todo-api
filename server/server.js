@@ -70,7 +70,7 @@ app.delete('/todos/:id', (req, res) => {
       return res.status(404).send();  //if no todo was found by ID send status 404 and empty message
     }
 
-      res.send(todo);
+      res.send({todo});
 
   }).catch((e) => {
     res.status(400).send();

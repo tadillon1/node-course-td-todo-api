@@ -6,7 +6,7 @@ const {ObjectID} = require('mongodb');
 const {app} = require('./../server');   //create connection to web server
 const {Todo} = require('./../models/todo');  //create connection to Todo model in mongoose
 
-const todos = [{
+const todos = [{          //create test todo array
   _id: new ObjectID(),
   text: "First test todo"
 }, {
@@ -19,6 +19,8 @@ beforeEach((done) => {            //Run some code before each test case...  only
     return Todo.insertMany(todos);  // THEN Add dummy array from above
   }).then(() => done());          //THEN call done.
 });
+
+//------------------------CREATE TODOS-------------------
 
 describe('POST /todos', () => {
   it('should create a new todo', (done) => {  //must pass "done" to the it function
@@ -60,6 +62,7 @@ describe('POST /todos', () => {
   }))
 });
 
+//-------------------------GET TODOS---------------------
 
 describe('GET /todos', () => {
   it('should get all todos', (done) => {
@@ -99,5 +102,45 @@ describe('GET /todos/:id', () => {
       .expect(400)
       .end(done);
   });
+});
 
+//--------------------DELETE TODOS-----------------------
+
+describe('DELETE /todos/:id', () => {
+  it('should remove a todo', (done) => {
+    var hexId = todos[1]._id.toHexString();
+
+    request(app)
+      .delete(`/todos/${hexId}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo._id).toBe(hexId);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        Todo.findById(hexId).then((todo) => {
+          expect(todo).toNotExist();
+          done();
+        }).catch((e) => done(e));
+      });
+  });
+
+
+ it('Should return 404 if todo not found', (done) => {
+   var hexId = new ObjectID().toHexString();
+   request (app)
+     .delete(`/todos/{$hexId}`)
+     .expect(404)
+     .end (done);
+  });
+  //
+ it('Should return 404 if ObjectID is invalid', (done) => {
+   request(app)
+     .delete('todos/123abc')
+     .expect(404)
+     .end(done);
+ });
 });
