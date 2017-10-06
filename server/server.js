@@ -1,6 +1,7 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var {ObjectID} = require('mongodb');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
@@ -79,6 +80,38 @@ app.delete('/todos/:id', (req, res) => {
     //error
       //send 400 with empty body
 });
+
+
+//------------------------------------UPDATE------------------------------------------
+
+app.patch('/todos/:id', (req, res) => {   // PATCH is the update
+  var id = req.params.id;
+  var body = _.pick(req.body, ['text', 'completed']);  //This allows users to only update the text and the completed status of a todo.
+
+  //validate the id -> not valid? return 404
+  if(!ObjectID.isValid(id)) {         //validate the ID is a valid MongoDB ID
+    return res.status(404).send();  //If the id is not valid send status 404 and empty body
+  }
+
+  if(_.isBoolean(body.completed) && body.completed) {  //This checks if body.completed is a boolean AND if it is set to TRUE
+    body.completedAt = new Date().getTime();
+  }
+  else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+    if (!todo){
+      res.status(404).send();
+    }
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send();
+  });
+
+});
+
 
 //------------------------------------START SERVER------------------------------------------
 
