@@ -1,3 +1,5 @@
+require('./config/config');
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +10,7 @@ var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
 var app = express();
-const port = process.env.PORT || 3000;  //This will set the port when running on Heroku or set it to 3000 if running locally
+const port = process.env.PORT;  //This will set the port when running on Heroku or set it to 3000 if running locally
 
 app.use(bodyParser.json());     // bodyParser send json to the server.
 
