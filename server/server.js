@@ -14,6 +14,8 @@ const port = process.env.PORT;  //This will set the port when running on Heroku 
 
 app.use(bodyParser.json());     // bodyParser send json to the server.
 
+//------------------------------------CREATE TODO------------------------------------------
+
 app.post('/todos', (req, res) => {  //Create a new todo using POST.  json is the body which is the todo information. /todo is the URL for creating new todo
   var todo = new Todo({
     text: req.body.text
@@ -26,6 +28,8 @@ app.post('/todos', (req, res) => {  //Create a new todo using POST.  json is the
   });
 });
 
+//------------------------------------GET TODO------------------------------------------
+
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
@@ -34,6 +38,7 @@ app.get('/todos', (req, res) => {
   });
 });
 
+//------------------------------------GET TODO BY ID------------------------------------------
 //GET /todos/123456  --> GET a single todo by ID
 app.get('/todos/:id', (req, res) => { //This gets the value after the /todos/###
   var id = req.params.id;             //Set the id variable equal to the params.id from the web-call
@@ -55,7 +60,7 @@ app.get('/todos/:id', (req, res) => { //This gets the value after the /todos/###
     res.status(400).send();         //if there was an error, send 400 back with empty message
   });
 });
-//------------------------------------DELETE------------------------------------------
+//------------------------------------DELETE TODO------------------------------------------
 app.delete('/todos/:id', (req, res) => {
   //get the id
   var id = req.params.id;          //Set the id variable to the params.id from the web-call
@@ -84,7 +89,7 @@ app.delete('/todos/:id', (req, res) => {
 });
 
 
-//------------------------------------UPDATE------------------------------------------
+//------------------------------------UPDATE TODO------------------------------------------
 
 app.patch('/todos/:id', (req, res) => {   // PATCH is the update
   var id = req.params.id;
@@ -112,6 +117,19 @@ app.patch('/todos/:id', (req, res) => {   // PATCH is the update
     res.status(400).send();
   });
 
+});
+
+//-------------------------------------------USERS------------------------------------
+//  POST /users
+app.post('/users', (req, res) => {  //Create a new user using POST.  json is the body which is the todo information. /user is the URL for creating new user
+  var body = _.pick(req.body, ['email', 'password']);  //using lodash "pick" method to pull off the email and password from the JSON
+  var user = new User(body);        //Create new User using the inforation provided in body object
+
+  user.save().then((user) => {    //save the user to the DB
+    res.send(user);              //send the user object back
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
 });
 
 
