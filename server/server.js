@@ -121,12 +121,14 @@ app.patch('/todos/:id', (req, res) => {   // PATCH is the update
 
 //-------------------------------------------USERS------------------------------------
 //  POST /users
-app.post('/users', (req, res) => {  //Create a new user using POST.  json is the body which is the todo information. /user is the URL for creating new user
+app.post('/users', (req, res) => {  //Create a new user using POST.  json is the body which is the user information. /user is the URL for creating new user
   var body = _.pick(req.body, ['email', 'password']);  //using lodash "pick" method to pull off the email and password from the JSON
   var user = new User(body);        //Create new User using the inforation provided in body object
 
-  user.save().then((user) => {    //save the user to the DB
-    res.send(user);              //send the user object back
+  user.save().then(() => {             //save the user to the DB
+    return user.generateAuthToken();  //return the Authorization Token which is created in user.js file
+  }).then((token) => {
+    res.header('x-auth', token).send(user); //send back the user with the token in custom 'x-auth' header.
   }).catch((e) => {
     res.status(400).send(e);
   });
