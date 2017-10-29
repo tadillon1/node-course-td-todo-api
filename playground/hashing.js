@@ -38,15 +38,31 @@ const {SHA256} = require('crypto-js');  //npm install crypto-js --save
 //--------------------------------------------------------------------------------
 
 //*****  REAL MODULE IS CALLED JSONWEBTOKEN
+//
+// const jwt = require('jsonwebtoken'); //npm install JSONWEBTOKEN
+//
+// var data = {
+//   id: 10
+// };
+//
+// var token = jwt.sign(data, '123abc');      //takes ID and signs it with 123abc salt, returing the token.
+// console.log(token);
+//
+// var decoded = jwt.verify(token, '123abc');    //takes the token and the secret and validates it...
+// console.log('decoded', decoded);
 
-const jwt = require('jsonwebtoken'); //npm install JSONWEBTOKEN
+//--------------------------------------------------------------------------------------------
+const bcrypt = require('bcryptjs');
+var password = 'abc123!';
 
-var data = {
-  id: 10
-};
+// bcrypt.genSalt(10, (err, salt) => {
+//   bcrypt.hash(password, salt, (err, hash) => {
+//     console.log(hash);
+//   });
+// });
 
-var token = jwt.sign(data, '123abc');      //takes ID and signs it with 123abc salt, returing the token.
-console.log(token);
+var hashedPassword = '$2a$10$cRRkBZghOhOSqEc6.u44feuo8H06Ehwim4B2v3nEFK7ILakfkpzsS';
 
-var decoded = jwt.verify(token, '123abc');    //takes the token and the secret and validates it...
-console.log('decoded', decoded);
+bcrypt.compare(password, hashedPassword, (err, res) => {
+  console.log(res);
+})

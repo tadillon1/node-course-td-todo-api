@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const  validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 // {
 //   email: 'terry@example.com',
@@ -62,7 +63,7 @@ UserSchema.methods.generateAuthToken = function() {
   });
 };
 
-//-------------------------------------------------------------
+//-------------Find one User by the passed in token------------------------------------------------
 UserSchema.statics.findByToken = function (token) {   //Provides a method for finding a user by the passed in token
   var User = this;
   var decoded;
@@ -80,6 +81,21 @@ UserSchema.statics.findByToken = function (token) {   //Provides a method for fi
   });
 };
 //-------------------------------------------------------------------
+
+UserSchema.pre('save', function (next) {
+  var user = this;
+  
+  if (user.isModified('password')) {
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash;
+        next();
+      });
+    });
+  }else {
+    next();
+  }
+});
 
 var User = mongoose.model('User', UserSchema );
 
