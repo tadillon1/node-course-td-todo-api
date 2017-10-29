@@ -8,6 +8,7 @@ const {ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 const port = process.env.PORT;  //This will set the port when running on Heroku or set it to 3000 if running locally
@@ -131,7 +132,15 @@ app.post('/users', (req, res) => {  //Create a new user using POST.  json is the
     res.header('x-auth', token).send(user); //send back the user with the token in custom 'x-auth' header.
   }).catch((e) => {
     res.status(400).send(e);
-  });
+  })
+});
+
+
+
+
+//------------Validate user---------------------------------------------
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 

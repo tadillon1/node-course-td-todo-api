@@ -43,11 +43,11 @@ var UserSchema = new mongoose.Schema({    //defines the schema for a user
     }]
 });
 
-UserSchema.methods.toJSON = function () {
+UserSchema.methods.toJSON = function () {   //This function limits the amount of information returned to the user.
   var user = this;
   var userObject = user.toObject();
 
-  return _.pick(userObject, ['_id', 'email']);
+  return _.pick(userObject, ['_id', 'email']);  //Send only _id and email.  DON'T SEND TOKEN INFORMATION BACK
 };
 
 UserSchema.methods.generateAuthToken = function() {
@@ -60,8 +60,26 @@ UserSchema.methods.generateAuthToken = function() {
   return user.save().then(() => {
     return token;
   });
-
 };
+
+//-------------------------------------------------------------
+UserSchema.statics.findByToken = function (token) {   //Provides a method for finding a user by the passed in token
+  var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, 'abc123');  //This decodes the x-auth header token to see if there are any matches
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  return User.findOne({          //Find the associated user where the token and auth match the decoded values and return that user
+    '_id': decoded._id,           //Find the _id propery which matches
+    'tokens.token': token,      //Find the token in the tokens array which matches
+    'tokens.access': 'auth'     //Find the auth in the tokens array which matches
+  });
+};
+//-------------------------------------------------------------------
 
 var User = mongoose.model('User', UserSchema );
 
