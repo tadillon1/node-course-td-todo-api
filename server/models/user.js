@@ -44,6 +44,7 @@ var UserSchema = new mongoose.Schema({    //defines the schema for a user
     }]
 });
 
+//-------------LIMIT JSON INFO RETURNED------------------------------------------------
 UserSchema.methods.toJSON = function () {   //This function limits the amount of information returned to the user.
   var user = this;
   var userObject = user.toObject();
@@ -51,6 +52,7 @@ UserSchema.methods.toJSON = function () {   //This function limits the amount of
   return _.pick(userObject, ['_id', 'email']);  //Send only _id and email.  DON'T SEND TOKEN INFORMATION BACK
 };
 
+//-------------GENERATE A NEW TOKEN------------------------------------------------
 UserSchema.methods.generateAuthToken = function() {
   var user = this;
   var access = 'auth';
@@ -60,6 +62,17 @@ UserSchema.methods.generateAuthToken = function() {
 
   return user.save().then(() => {
     return token;
+  });
+};
+
+//-------------DELETE A MATCHING TOKEN TO LOG THE USER OUT------------------------------------------------
+UserSchema.methods.removeToken = function (token) {
+  var user = this;
+
+  return user.update({
+    $pull: {                  //MongoDB method to remove items from matching DB document
+      tokens: {token}
+    }
   });
 };
 
@@ -115,6 +128,11 @@ UserSchema.pre('save', function (next) {
     next();
   }
 });
+
+//-------------------------------------------------------------------
+
+
+
 
 var User = mongoose.model('User', UserSchema );
 
