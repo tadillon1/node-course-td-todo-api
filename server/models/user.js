@@ -6,9 +6,9 @@ const bcrypt = require('bcryptjs');
 
 // {
 //   email: 'terry@example.com',
-//   password: 'asdfasdf8sad9f8sadf987asd9f8'  //hash password stored in DB
+//   password: 'asdfasdf8sad9f8sadf987asd9f8'       //hash password stored in DB
 //   tokens: [{
-//     access: 'auth',                         //authentication token type
+//     access: 'auth',                               //authentication token type
 //     token: 'ksdkfjsdkfjsdfkjsdf 98usd9f78sd9f8'  //string passed back and fourth for http requests
 //   }]
 // }
