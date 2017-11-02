@@ -56,7 +56,7 @@ UserSchema.methods.toJSON = function () {   //This function limits the amount of
 UserSchema.methods.generateAuthToken = function() {
   var user = this;
   var access = 'auth';
-  var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
+  var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
   user.tokens.push({access, token});
 
@@ -82,7 +82,7 @@ UserSchema.statics.findByToken = function (token) {   //Provides a method for fi
   var decoded;
 
   try {
-    decoded = jwt.verify(token, 'abc123');  //This decodes the x-auth header token to see if there are any matches
+    decoded = jwt.verify(token, process.env.JWT_SECRET);  //This decodes the x-auth header token to see if there are any matches
   } catch (e) {
     return Promise.reject();
   }
